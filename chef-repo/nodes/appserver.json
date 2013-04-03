@@ -1,1 +1,9 @@
-{"run_list":["nginx"]}
+{
+	"nginx": {
+		"proxy_port": 3030
+	},
+	"run_list": [
+		"nginx",
+		"nginx::reverse_proxy"
+	]
+}
