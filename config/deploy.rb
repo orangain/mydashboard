@@ -1,6 +1,8 @@
 set :default_stage, "production"
 require 'capistrano/ext/multistage'
 
+require "bundler/capistrano"
+
 set :application, "mydashboard"
 set :repository,  "https://github.com/orangain/mydashboard"
 
