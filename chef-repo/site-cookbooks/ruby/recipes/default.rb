@@ -14,3 +14,8 @@ end
 gem_package "bundler" do
   action :install
 end
+
+# Required when building C extensions
+package "build-essential" do
+  action :install
+end
