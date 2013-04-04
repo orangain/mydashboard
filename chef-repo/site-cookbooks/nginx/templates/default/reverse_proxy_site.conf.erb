@@ -24,4 +24,9 @@ server {
 	location / {
 		proxy_pass http://<%= node['nginx']['proxy_host'] %>:<%= node['nginx']['proxy_port'] %>/;
 	}
+
+	location /events {
+		proxy_pass http://<%= node['nginx']['proxy_host'] %>:<%= node['nginx']['proxy_port'] %>/events;
+		proxy_buffering off; # For chunked encoding support
+	}
 }
