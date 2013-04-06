@@ -1,11 +1,6 @@
 {
-	"nginx": {
-		"proxy_port": 3030
-	},
 	"run_list": [
-		"git",
-		"ruby",
-		"nginx",
-		"nginx::reverse_proxy"
+		"role[webserver]",
+		"role[appserver]"
 	]
 }

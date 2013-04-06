@@ -1,0 +1,17 @@
+{
+	"name": "webserver",
+	"default_attributes": {
+		"nginx": {
+			"proxy_port": 3030
+		}
+	},
+	"override_attributes": {},
+	"json_class": "Chef::Role",
+	"description": "",
+	"chef_type": "role",
+	"run_list": [
+		"recipe[git]",
+		"recipe[nginx]",
+		"recipe[nginx::reverse_proxy]"
+	]
+}
