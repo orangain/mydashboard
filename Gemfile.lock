@@ -31,6 +31,7 @@ GEM
       multi_json (~> 1.0)
     highline (1.6.16)
     hike (1.2.1)
+    json (1.7.7)
     libv8 (3.3.10.4)
     multi_json (1.7.2)
     net-scp (1.1.0)
@@ -82,4 +83,5 @@ DEPENDENCIES
   capistrano-ext
   capistrano_colors
   dashing
+  json
   therubyracer (= 0.10.2)
