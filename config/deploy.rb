@@ -22,10 +22,6 @@ set :use_sudo, false
 
 # If you are using Passenger mod_rails uncomment this:
 namespace :deploy do
-  task :chef_solo do
-    run "#{sudo} chef-solo -c #{current_path}/chef-repo/solo.rb -j #{current_path}/chef-repo/nodes/appserver.json"
-  end
-
   task :start, :roles => :app, :except => { :no_release => true } do
     run "#{sudo} restart #{application} || #{sudo} start #{application}"
   end
@@ -57,5 +53,4 @@ UPSTART_SCRIPT
   end
 end
 
-before 'deploy:finalize_update', 'deploy:chef_solo'
 after 'deploy:update', 'deploy:write_upstart_script'
