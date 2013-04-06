@@ -1,3 +1,23 @@
+<script type='text/javascript'>
+$(function() {
+  // These settings override the defaults set in application.coffee. You can do this on a per dashboard basis.
+  var window_width = $(window).width();
+  var window_height = $(window).height();
+  $('head').append(
+    $('<meta>')
+      .attr('name', 'viewport')
+      .attr('content', 'width=' + window_width + 'px')
+  );
+
+  Dashing.numColumns = 2;
+  var widget_width = (window_width - 10) / Dashing.numColumns - 10;
+  var widget_height = (window_height - 10) / 2 - 10;
+
+  Dashing.widget_base_dimensions = [widget_width, widget_height];
+});
+</script>
+
+
 <% content_for(:title) { "My super sweet dashboard" } %>
 <div class="gridster">
   <ul>
