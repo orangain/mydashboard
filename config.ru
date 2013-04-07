@@ -1,3 +1,9 @@
+require 'sinatra'
+
+configure do
+  load 'config.secret.ru'
+end
+
 require 'dashing'
 
 configure do
