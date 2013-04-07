@@ -60,35 +60,95 @@ class Time
   end unless method_defined?(:to_datetime)
 end
 
-puts Time.now.to_datetime
+class CalendarSchedule
 
-def get_schedules(calendar_api)
+  attr_accessor :start_date, :end_date, :summary, :color
 
-  def get_date(event, calendar)
+  def initialize(event, color)
     if event.start.date
-      date = DateTime.parse(event.start.date)
-      all_day = true
+      @start_date = Date.parse(event.start.date) # Date
+      @end_date = Date.parse(event.end.date) # Date
+      @all_day = true
     else
-      date = event.start.dateTime.to_datetime
-      all_day = false
+      @start_date = event.start.dateTime.to_datetime # DateTime
+      @end_date = event.end.dateTime.to_datetime # DateTime
+      @all_day = false
     end
 
-    def date_equals(a, b)
-      a.year == b.year and a.month == b.month and a.day == b.day
-    end
+    @summary = event.summary
+    @color = color
+  end
 
-    date_string = if date_equals(date, Date.today)
-        'Today'
-      elsif date_equals(date, Date.today + 1)
-        'Tomorrow'
+  def all_day?
+    @all_day
+  end
+
+  def done?
+    @end_date < now
+  end
+
+  def to_date_string(now = DateTime.now, today = Date.today)
+    tomorrow = today + 1
+
+    to_relative = lambda {|datetime|
+      if datetime.instance_of?(Date)
+
+        if datetime == today
+          "Today"
+        elsif datetime == tomorrow
+          "Tomorrow"
+        else
+          datetime.strftime('%a %b %d')
+        end
+
+      elsif datetime.instance_of?(DateTime)
+
+        date_part = Date.new(datetime.year, datetime.month, datetime.day)
+
+        if date_part == today
+          datetime.strftime('%H:%M')
+        else
+          "#{to_relative[date_part]} #{datetime.strftime('%H:%M')}"
+        end
+      end
+    }
+
+    if all_day?
+      if start_date < today
+        if end_date < tomorrow
+          "Done"
+        elsif end_date == tomorrow # ends today
+          "Until today"
+        else
+          "Going until #{to_relative[end_date]}"
+        end
+
+      elsif start_date == today
+        if end_date == tomorrow # ends today
+          "Today"
+        else
+          "From today until #{to_relative[end_date]}"
+        end
+
       else
-        date.strftime('%a %b %d')
+        to_relative[start_date]
       end
 
-    date_string += ' ' + date.strftime('%H:%M') unless all_day
+    else
+      if end_date < now
+        "Done"
+      elsif start_date < now
+        "Going until #{to_relative[end_date]}"
+      else
+        to_relative[start_date]
+      end
 
-    return date_string
+    end
   end
+
+end
+
+def get_schedules(calendar_api)
 
   timeMin = Date.today.rfc3339
   timeMax = (Date.today + 7).rfc3339
@@ -105,11 +165,7 @@ def get_schedules(calendar_api)
                                      :singleEvents => true)
 
     schedules += events.reject{|event| event.status == 'cancelled' }.map{|event|
-      {
-        :summary => event.summary,
-        :date => get_date(event, calendar),
-        :color => colors.calendar.to_hash[calendar.colorId]['background'],
-      }
+      CalendarSchedule.new(event, colors.calendar.to_hash[calendar.colorId]['background'])
     }
   end
 
@@ -141,10 +197,10 @@ SCHEDULER.every '10s', :first_in => 0 do |job|
     index += 1
 
     send_event('calendar', {
-      :time => schedule[:date],
-      :text => schedule[:summary],
+      :time => schedule.to_date_string,
+      :text => schedule.summary,
       :moreinfo => "#{index} / #{schedules.size}",
-      :color => schedule[:color],
+      :color => schedule.color,
     })
 
   end
