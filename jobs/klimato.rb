@@ -3,7 +3,7 @@ require "json"
 
 # WOEID for location:
 # http://woeid.rosselliot.co.nz
-woeid  = 733075
+woeid  = settings.klimato[:woeid] || 733075
 
 # Units for temperature:
 # f: Fahrenheit
