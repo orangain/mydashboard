@@ -22,6 +22,13 @@ set :use_sudo, false
 
 # If you are using Passenger mod_rails uncomment this:
 namespace :deploy do
+  task :copy_config, :roles => :app do
+    name = "config.secret.ru"
+    # Using top.upload instread of upload
+    # See: https://gist.github.com/mrchrisadams/3084229
+    top.upload(name, "#{latest_release}/#{name}")
+  end
+
   task :start, :roles => :app, :except => { :no_release => true } do
     run "#{sudo} restart #{application} || #{sudo} start #{application}"
   end
@@ -53,4 +60,5 @@ UPSTART_SCRIPT
   end
 end
 
+after 'deploy:update_code', 'deploy:copy_config'
 after 'deploy:update', 'deploy:write_upstart_script'
