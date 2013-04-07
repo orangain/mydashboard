@@ -5,16 +5,12 @@ require 'date'
 require 'google/api_client'
 require 'pp'
 
-OAUTH_YAML_PATH = File.expand_path('~/.google-api.yaml')
-
-oauth_yaml = YAML.load_file(OAUTH_YAML_PATH)
-
 client = Google::APIClient.new
-client.authorization.client_id = oauth_yaml["client_id"]
-client.authorization.client_secret = oauth_yaml["client_secret"]
-client.authorization.scope = oauth_yaml["scope"]
-client.authorization.refresh_token = oauth_yaml["refresh_token"]
-client.authorization.access_token = oauth_yaml["access_token"]
+client.authorization.client_id = settings.calendar[:client_id]
+client.authorization.client_secret = settings.calendar[:client_secret]
+client.authorization.scope = settings.calendar[:scope]
+client.authorization.refresh_token = settings.calendar[:refresh_token]
+client.authorization.access_token = settings.calendar[:access_token]
 
 if client.authorization.refresh_token && client.authorization.expired?
   client.authorization.fetch_access_token!
