@@ -54,14 +54,40 @@ class GoogleCalendarAPI
 
 end
 
+class Time
+  def to_datetime
+    ::DateTime.civil(year, month, day, hour, min, sec, Rational(utc_offset, 86400))
+  end unless method_defined?(:to_datetime)
+end
+
+puts Time.now.to_datetime
+
 def get_schedules(calendar_api)
 
   def get_date(event, calendar)
     if event.start.date
-      DateTime.parse(event.start.date).strftime('%a %b %d')
+      date = DateTime.parse(event.start.date)
+      all_day = true
     else
-      event.start.dateTime.strftime('%a %b %d %H:%M')
+      date = event.start.dateTime.to_datetime
+      all_day = false
     end
+
+    def date_equals(a, b)
+      a.year == b.year and a.month == b.month and a.day == b.day
+    end
+
+    date_string = if date_equals(date, Date.today)
+        'Today'
+      elsif date_equals(date, Date.today + 1)
+        'Tomorrow'
+      else
+        date.strftime('%a %b %d')
+      end
+
+    date_string += ' ' + date.strftime('%H:%M') unless all_day
+
+    return date_string
   end
 
   timeMin = Date.today.rfc3339
