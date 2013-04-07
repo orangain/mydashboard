@@ -1,3 +1,5 @@
+default_run_options[:pty]=true
+
 set :default_stage, "production"
 require 'capistrano/ext/multistage'
 
